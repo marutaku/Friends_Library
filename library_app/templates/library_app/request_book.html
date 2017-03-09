@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{%block body %}
+{%if error_message %}
+
+<strong>{{error_massage}}</strong>
+
+{% endif %}
+
+<form action="{% url 'library_app:search_isbn'%}" method="post" accept-charset="utf-8">
+{% csrf_token %}
+<p><strong>isbnコード（本に書いてある12桁もしくは14桁の数字）を入力してください</strong></p>
+    <table>
+            <tr>
+                <td>ISBN</td>
+                <td><textarea name="isbn" row=5 cols=14></textarea>
+            </tr>
+        </tbody>
+    </table>
+    <input type="submit"  value="送信">
+</form>
+
+<form action="{% url 'library_app:search_title'%}" method="post" accept-charset="utf-8">
+{% csrf_token %}
+<p><strong>タイトルを入力してください</strong></p>
+    <table>
+            <tr>
+                <td>Title</td>
+                <td><textarea name="title" row=5 cols=14></textarea>
+            </tr>
+        </tbody>
+    </table>
+    <input type="submit"  value="送信">
+</form>
+{% endblock %}

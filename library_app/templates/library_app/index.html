@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% block body %}
+<h1>ようこそ{{user.username}}さん</h1>
+<form action="{% url 'library_app:request_page' %}" method=get>
+<input type=submit value='request'>
+</bottun>
+</form>
+{%if latest_request_book_list%}
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>user</th>
+      <th>title</th>
+      <th>author</th>
+    </tr>
+  </thead>
+{% csrf_token %}
+  <tbody>
+    {%for request_book in latest_request_book_list%}
+    <tr>
+          <td><a href="{% url 'library_app:detail' request_book.user.id %}">
+          <strong>{{ request_book.user }}</strong></a></p></td>
+          <td><a href="{{ request_book.book_link }}"><p>{{ request_book.title }}</p></a></td>
+          <td>{{ request_book.author }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+{% else %}
+  <p>No request are available.</p>
+{% endif %}
+
+{% endblock %}

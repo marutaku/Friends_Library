@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% block body %}
+<table>
+    <thead>
+        <tr>
+            <th>Title</th>
+        
+            <th>Author</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td><strong>{{ title }}</strong></td>
+        
+            <td><strong>{{ author }}</strong></td>
+        </tr>
+    </tbody>
+</table>
+    <p>この本を登録しますか？</p>
+<form action="{% url 'library_app:regist_request' %}" method=post accept-charset="utf-8">
+{% csrf_token %}
+    <input type="submit" value="登録">
+    <input type=hidden value="{{title}}" name="title">
+    <input type=hidden value="{{author}}" name="author">
+    <input type=hidden value="{{isbn}}" name="isbn">
+    <input type=hidden value="{{link}}" name="link">
+</form>
+<form action="{% url 'library_app:request_page' %}" method=get accept-charset="utf-8">
+<input type="submit" value="検索に戻る">
+
+</form>
+{% endblock %}

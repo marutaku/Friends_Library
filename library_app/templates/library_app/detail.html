@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% block body %}
+<h1>{{ user.username }}</h1>
+
+
+{% if error_message %}
+<p><strong>{{ error_message }}</strong></p>
+{% endif %}
+
+
+{% if user.request_book_set %}
+    {% for book in user.request_book_set.all %}
+            <li>
+                <a href="{% url 'library_app:detail' book.user.id %}">
+                {{ book.user}}</a><br>
+                {{ book.title }}
+                </dl>
+            </li>
+    {% endfor %}
+{% else %}
+<h3>No Request abailable</h3>
+{% endif %}
+
+<h3><a href="{% url 'library_app:index' %}">戻る</a></h3>
+{% endblock %}
