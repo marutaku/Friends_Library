@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load staticfiles%}
+{% block body %}
+<h1>ようこそ{{user.username}}さん</h1>
+<form action="{% url 'library_app:request_page' %}" method=get>
+<input type=submit value='request'>
+</form>
+<form action="{% url 'library_app:present_page' %}" method=get>
+<input type=submit value='present'>
+</bottun>
+</form>
+<a href="{% url 'library_app:index' %}">リクエストを見る</a>
+{%if latest_present_book_list%}
+<table class="table table-striped table-bordered">
+  <thead>
+    <tr>
+      <th>user</th>
+      <th>title</th>
+      <th>author</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+{% csrf_token %}
+  <tbody>
+    {%for present_book in latest_present_book_list%}
+    <tr>
+          <td><a href="{% url 'library_app:detail' present_book.user.id %}">
+          <strong>{{ present_book.user }}</strong></a></p></td>
+          <td><a href="{{ present_book.book_link }}"><p>{{ present_book.title }}</p></a></td>
+          <td>{{ present_book.author }}</td>
+          <td>{% if user.id == present_book.user.id %}
+          <form action="{% url 'library_app:delete' %}" method=post >
+          {% csrf_token %}
+          <input type=submit value=Delete>
+          <input type=hidden value="{{present_book.id}}" name="id">
+          <input type=hidden value="{{user.id}}" name="user">
+          {% endif %}
+          </form></td>
+        </tr>
+    {% endfor %}
+    </tbody>
+    </table>
+{% else %}
+  <p>No present are available.</p>
+{% endif %}
+
+{% endblock %}

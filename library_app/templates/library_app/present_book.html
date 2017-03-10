@@ -6,7 +6,7 @@
 
 {% endif %}
 
-<form action="{% url 'library_app:search_isbn_request'%}" method="post" accept-charset="utf-8">
+<form action="{% url 'library_app:search_isbn_present'%}" method="post" accept-charset="utf-8">
 {% csrf_token %}
 <p><strong>isbnコード（本に書いてある12桁もしくは14桁の数字）を入力してください</strong></p>
     <table>

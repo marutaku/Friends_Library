@@ -20,13 +20,22 @@ class AccountCreateView(generic.CreateView):
         return reverse('library_app:login')
 
 @method_decorator(login_required, name='dispatch')
-class IndexView(generic.ListView):
-    template_name = 'library_app/index.html'
+class RequestIndexView(generic.ListView):
+    template_name = 'library_app/request_index.html'
     context_object_name = 'latest_request_book_list'
     model = Request_Book
 
     def get_queryset(self):
         return Request_Book.objects.order_by('-time')[:50]
+
+@method_decorator(login_required, name='dispatch')
+class PresentIndexView(generic.ListView):
+    template_name = 'library_app/present_index.html'
+    context_object_name = 'latest_present_book_list'
+    model = Present_Book
+
+    def get_queryset(self):
+        return Present_Book.objects.order_by('-time')[:50]
 
 class DetailView(generic.DetailView):
     model = User
@@ -37,15 +46,30 @@ def request_page(request):
     context = {}
     return render(request, 'library_app/request_book.html', context)
 
+def present_page(request):
+    context = {}
+    return render(request, 'library_app/present_book.html', context)
+
 @csrf_protect
-def search_isbn(request):
+def search_isbn_request(request):
     isbn = request.POST["isbn"]
-    book_data = get_data(isbn, 'isbn')
-    if book_data["title"] == "None" or book_data["author"] == "None":
-        return render(request, 'library_app/request_book.html', {'error_massage': 'Can not find'})
-    else:
+    try:
+        book_data = get_data(isbn, 'isbn')
         context = book_data
-        return render(request, 'library_app/search_result.html', context)
+        return render(request, 'library_app/search_result_request.html', context)
+    except:
+        error_massage = 'Can not find'
+        return render(request, 'library_app/request_book.html', {'error_massage': error_massage})
+
+def search_isbn_present(request):
+    isbn = request.POST["isbn"]
+    try:
+        book_data = get_data(isbn, 'isbn')
+        context = book_data
+        return render(request, 'library_app/search_result_present.html', context)
+    except:
+        error_massage = 'Can not find'
+        return render(request, 'library_app/present_book.html', {'error_massage': error_massage})
 
 @csrf_protect
 def search_title(request):
@@ -57,7 +81,7 @@ def search_title(request):
     except:
         return render(request, 'library_app/search_page', {'error_massage': 'Can not find'})
 
-def regist_book(request):
+def regist_request(request):
     user = request.user
     req_book = Request_Book(
                    title = request.POST['title'],
@@ -68,7 +92,32 @@ def regist_book(request):
                    time = timezone.now()
                    )
     req_book.save()
+    return redirect("library_app:request_index")
+
+def regist_present(request):
+    user = request.user
+    prs_book = Present_Book(
+                   title = request.POST['title'],
+                   author = request.POST['author'],
+                   book_link = request.POST['link'],
+                   isbn = request.POST['isbn'],
+                   user = user,
+                   time = timezone.now()
+                   )
+    prs_book.save()
     return redirect("library_app:index")
+
+def request_delete(request):
+    book_id = request.POST["id"]
+    target_book = Request_Book.objects.get(pk=book_id)
+    user_id = target_book.user_id
+    if request.user.id == user_id:
+        target_book = Request_Book.objects.get(pk=book_id)
+        target_book.delete()
+    else:
+        print("missmatch")
+    return redirect("library_app:index")
+
 
 
 
